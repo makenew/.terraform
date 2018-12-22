@@ -3,7 +3,7 @@ version: 2.1
 
 executors:
   terraform:
-    working_directory: ~/project
+    working_directory: ~/tf
     docker:
       - image: debian:stretch
 
@@ -64,21 +64,21 @@ jobs:
           key: terraform-{{ arch }}-<< parameters.env >>-
       - run:
           name: Init
-          working_directory: ~/project/<< parameters.path >>
+          working_directory: ~/tf/<< parameters.path >>
           command: /root/build/terraform init -input=false
       - save_cache:
           key: terraform-{{ arch }}-<< parameters.env >>-{{ epoch }}
           paths: << parameters.path >>/.terraform
       - run:
           name: Plan
-          working_directory: ~/project/<< parameters.path >>
+          working_directory: ~/tf/<< parameters.path >>
           command: /root/build/terraform plan -input=false -out=ci -var-file="<< parameters.env >>.tfvars"
       - when:
           condition: << parameters.apply >>
           steps:
             - deploy:
                 name: Apply
-                working_directory: ~/project/<< parameters.path >>
+                working_directory: ~/tf/<< parameters.path >>
                 command: /root/build/terraform apply ci
 
 workflows:
