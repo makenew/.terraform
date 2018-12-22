@@ -54,12 +54,12 @@ jobs:
       - install
       - setup
       - restore_cache:
-          key: terraform-{{ arch }}-root-
+          key: terraform-{{ arch }}-{{ checksum "terraform.tf" }}-
       - run:
           name: Init
           command: /root/build/terraform init -input=false
       - save_cache:
-          key: terraform-{{ arch }}-root-{{ epoch }}
+          key: terraform-{{ arch }}-{{ checksum "terraform.tf" }-{{ epoch }}
           paths: .terraform
       - run:
           name: Plan
