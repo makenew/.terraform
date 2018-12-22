@@ -3,7 +3,6 @@ version: 2.1
 
 executors:
   terraform:
-    working_directory: ~/tf
     docker:
       - image: debian:stretch
 
@@ -49,36 +48,27 @@ jobs:
       apply:
         type: boolean
         default: false
-      path:
-        type: string
-        default: global
-      env:
-        type: string
-        default: global
     executor:
       name: terraform
     steps:
       - install
       - setup
       - restore_cache:
-          key: terraform-{{ arch }}-<< parameters.env >>-
+          key: terraform-{{ arch }}-root-
       - run:
           name: Init
-          working_directory: ~/tf/<< parameters.path >>
           command: /root/build/terraform init -input=false
       - save_cache:
-          key: terraform-{{ arch }}-<< parameters.env >>-{{ epoch }}
-          paths: << parameters.path >>/.terraform
+          key: terraform-{{ arch }}-root-{{ epoch }}
+          paths: .terraform
       - run:
           name: Plan
-          working_directory: ~/tf/<< parameters.path >>
-          command: /root/build/terraform plan -input=false -out=ci -var-file="<< parameters.env >>.tfvars"
+          command: /root/build/terraform plan -input=false -out=ci -var-file="default.tfvars"
       - when:
           condition: << parameters.apply >>
           steps:
             - deploy:
                 name: Apply
-                working_directory: ~/tf/<< parameters.path >>
                 command: /root/build/terraform apply ci
 
 workflows:
