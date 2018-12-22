@@ -1,0 +1,97 @@
+---
+version: 2.1
+
+executors:
+  terraform:
+    working_directory: ~/project
+    docker:
+      - image: debian:stretch
+
+commands:
+  setup:
+    description: Setup environment
+    steps:
+      - checkout
+  install:
+    description: Install Terraform 0.12
+    steps:
+      - run:
+          name: Update dependencies
+          command: apt-get update
+      - run:
+          name: Install dependencies
+          command: apt-get install -y wget unzip
+      - run:
+          name: Download Terraform
+          working_directory: /root/build
+          command: |
+            wget https://releases.hashicorp.com/terraform/0.12.0-alpha4/terraform_0.12.0-alpha4_terraform_0.12.0-alpha4_linux_amd64.zip
+      - run:
+          name: Save Terraform checksum
+          working_directory: /root/build
+          command: |
+            echo "7fa42e0d667f4b401c92b9ec9dd8f58611c98c50488feadc23060346f369c40e  terraform_0.12.0-alpha4_terraform_0.12.0-alpha4_linux_amd64.zip" > terraform_0.12.0-alpha4_SHA256SUMS
+      - run:
+          name: Verify Terraform
+          working_directory: /root/build
+          command: |
+            sha256sum -c terraform_0.12.0-alpha4_SHA256SUMS
+      - run:
+          name: Extract Terraform
+          working_directory: /root/build
+          command: |
+            unzip terraform_0.12.0-alpha4_terraform_0.12.0-alpha4_linux_amd64.zip
+
+jobs:
+  terraform:
+    description: Terraform plan
+    parameters:
+      apply:
+        type: boolean
+        default: false
+      path:
+        type: string
+        default: global
+      env:
+        type: string
+        default: global
+    executor:
+      name: terraform
+    steps:
+      - install
+      - setup
+      - restore_cache:
+          key: terraform-{{ arch }}-<< parameters.env >>-
+      - run:
+          name: Init
+          working_directory: ~/project/<< parameters.path >>
+          command: /root/build/terraform init -input=false
+      - save_cache:
+          key: terraform-{{ arch }}-<< parameters.env >>-{{ epoch }}
+          paths: << parameters.path >>/.terraform
+      - run:
+          name: Plan
+          working_directory: ~/project/<< parameters.path >>
+          command: /root/build/terraform plan -input=false -out=ci -var-file="<< parameters.env >>.tfvars"
+      - when:
+          condition: << parameters.apply >>
+          steps:
+            - deploy:
+                name: Apply
+                working_directory: ~/project/<< parameters.path >>
+                command: /root/build/terraform apply ci
+
+workflows:
+  default:
+    jobs:
+      - terraform:
+          name: plan
+          filters:
+            branches:
+              ignore: master
+      - terraform:
+          name: apply
+          apply: true
+          filters:
+            branches:
+              only: master
