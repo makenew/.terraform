@@ -6,15 +6,9 @@ tags = {
 
 apps = {
   foo = {
+    domain = "foo"
     tags = {
       "Application ID" = "Foo"
     }
-  }
-}
-
-domains = {
-  foo = {
-    id = "foo"
-    domain = "foo"
   }
 }
