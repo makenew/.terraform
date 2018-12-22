@@ -1,5 +1,5 @@
 locals {
-  global = {
+  context = {
     zone_id = var.zone_id
     domain = var.domain
     tags = var.tags
@@ -8,5 +8,5 @@ locals {
 
 module "serverless_python" {
   source = "./projects/serverless-python"
-  global = local.global
+  global = local.context
 }
