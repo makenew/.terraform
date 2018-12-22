@@ -10,6 +10,7 @@ terraform {
 }
 
 provider "aws" {
+  # TODO Use version when Terraform 0.12 is released.
   # version = "~> 1.40.0"
   region = "us-east-1"
 }
