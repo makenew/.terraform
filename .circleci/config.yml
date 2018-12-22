@@ -59,7 +59,7 @@ jobs:
           name: Init
           command: /root/build/terraform init -input=false
       - save_cache:
-          key: terraform-{{ arch }}-{{ checksum "terraform.tf" }-{{ epoch }}
+          key: terraform-{{ arch }}-{{ checksum "terraform.tf" }}-{{ epoch }}
           paths: .terraform
       - run:
           name: Plan
