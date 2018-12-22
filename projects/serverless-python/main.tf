@@ -1,9 +1,16 @@
+locals {
+  domain = "serverless-python"
+  tags = {
+    "Application ID" = "serverless-python"
+  }
+}
+
 module "certificate" {
   source = "../../lib/aws/acm_certificate"
-  domain = "${var.domain}.${var.global.domain}"
-  zone_id = var.global.zone_id
+  domain = "${local.domain}.${var.domain}"
+  zone_id = var.zone_id
   tags = merge(
-    var.global.tags,
-    var.tags
+    var.tags,
+    local.tags
   )
 }
