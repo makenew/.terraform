@@ -10,6 +10,12 @@ commands:
   setup:
     description: Setup environment
     steps:
+      - run:
+          name: Update dependencies
+          command: apt-get update
+      - run:
+          name: Install build dependencies
+          command: apt-get install -y ca-certificates git openssh-client
       - checkout
   install:
     description: Install Terraform 0.12
