@@ -1,2 +1,11 @@
-variable "domain" {}
-variable "zone_id" {}
+variable "domain" {
+  type = "string"
+}
+
+variable "zone_id" {
+  type = "string"
+}
+
+variable "tags" {
+  type = "map"
+}
