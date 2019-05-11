@@ -6,11 +6,12 @@ resource "aws_acm_certificate" "main" {
 }
 
 resource "aws_route53_record" "main" {
-  count = length(var.subdomains) + 1
-  name = aws_acm_certificate.main.domain_validation_options[count.index].resource_record_name
-  type = aws_acm_certificate.main.domain_validation_options[count.index].resource_record_type
+  allow_overwrite = true
+  count = length(aws_acm_certificate.main.domain_validation_options)
+  name = aws_acm_certificate.main.domain_validation_options.*.resource_record_name[count.index]
+  type = aws_acm_certificate.main.domain_validation_options.*.resource_record_type[count.index]
   zone_id = var.zone_id
-  records = [aws_acm_certificate.main.domain_validation_options[count.index].resource_record_value]
+  records = [aws_acm_certificate.main.domain_validation_options.*.resource_record_value[count.index]]
   ttl = 3600
 }
 
