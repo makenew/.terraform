@@ -7,6 +7,13 @@ locals {
   domain = join(".", [var.subdomain, var.rootdomain])
 }
 
+module "serverless_benthos" {
+  source = "./projects/serverless-benthos"
+  zone_id = local.zone_id
+  domain = local.domain
+  tags = var.tags
+}
+
 module "serverless_nodejs" {
   source = "./projects/serverless-nodejs"
   zone_id = local.zone_id
