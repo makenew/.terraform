@@ -1,5 +1,5 @@
 terraform {
-  required_version = "= 0.12"
+  required_version = "~> 0.12"
   backend "s3" {
     bucket = "makenew-terraform-state-0"
     dynamodb_table = "makenew-terraform-state-0"

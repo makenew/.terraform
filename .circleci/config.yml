@@ -4,7 +4,7 @@ version: 2.1
 executors:
   terraform:
     docker:
-      - image: hashicorp/terraform:0.12.0-rc1
+      - image: hashicorp/terraform:0.12.29
 
 commands:
   setup:
